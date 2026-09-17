@@ -8,6 +8,8 @@
 #define PEDAL_WIDTH 10
 #define PEDAL_HEIGHT 100
 
+#define PEDAL_SPEED 0.00001
+
 SDL_Window* window;
 SDL_Renderer* renderer;
 
@@ -43,8 +45,17 @@ int main(void){
 
         // poll events
         SDL_Event e;
-        SDL_PollEvent(&e);
-        if(e.type == SDL_EVENT_QUIT) break;
+        if(SDL_PollEvent(&e)){
+            // quiting the app
+            if(e.type == SDL_EVENT_QUIT) break;
+            // movement
+            if(e.type == SDL_EVENT_KEY_DOWN){
+                if(e.key.key == SDLK_UP) { right_pedal.y -= PEDAL_SPEED * delta_time; }
+                if(e.key.key == SDLK_DOWN) { right_pedal.y += PEDAL_SPEED * delta_time; }
+                if(e.key.key == SDLK_W) { left_pedal.y -= PEDAL_SPEED * delta_time; }
+                if(e.key.key == SDLK_S) { left_pedal.y += PEDAL_SPEED * delta_time; }
+            }
+        }
 
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
