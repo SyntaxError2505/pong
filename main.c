@@ -8,7 +8,7 @@
 #define PEDAL_WIDTH 10
 #define PEDAL_HEIGHT 100
 
-#define PEDAL_SPEED 0.00001
+#define PEDAL_SPEED (10.0 / 10000000.0)
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -48,14 +48,14 @@ int main(void){
         if(SDL_PollEvent(&e)){
             // quiting the app
             if(e.type == SDL_EVENT_QUIT) break;
-            // movement
-            if(e.type == SDL_EVENT_KEY_DOWN){
-                if(e.key.key == SDLK_UP) { right_pedal.y -= PEDAL_SPEED * delta_time; }
-                if(e.key.key == SDLK_DOWN) { right_pedal.y += PEDAL_SPEED * delta_time; }
-                if(e.key.key == SDLK_W) { left_pedal.y -= PEDAL_SPEED * delta_time; }
-                if(e.key.key == SDLK_S) { left_pedal.y += PEDAL_SPEED * delta_time; }
-            }
         }
+
+        // movement
+        const bool *keys = SDL_GetKeyboardState(NULL);
+        if(keys[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED * delta_time; }
+        if(keys[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED * delta_time; }
+        if(keys[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED * delta_time; }
+        if(keys[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED * delta_time; }
 
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
