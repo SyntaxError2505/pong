@@ -90,6 +90,9 @@ int main(void){
         Uint64 new_time = SDL_GetTicksNS();
         Uint64 delta_time = new_time - old_time;
         old_time = new_time;
+        if(delta_time > 100000000){
+            delta_time = 100000000;
+        }
 
         // print debug info
         printf("Delta Time: %lu\nFramerate: %f\nBall x: %f\nBall y: %f\nBall dx: %f\nBall dy: %f\n", delta_time, 1000/((double)delta_time / 1000000.0), ball.x, ball.y, ball.dx, ball.dy);
@@ -123,11 +126,15 @@ int main(void){
         }
 
         // bounce of paddles
-        if(ball.x < ball.r && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
-            ball.dx = (ball.dx < 0) ? ball.dx * -1 : ball.dx;
+        if(ball.x - ball.r < left_pedal.x + left_pedal.w && ball.dx < 0
+            && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
+            ball.x = left_pedal.x + left_pedal.w + ball.r;
+            ball.dx = -ball.dx;
         }
-        if(ball.x > WIDTH - ball.r && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
-            ball.dx = (ball.dy > 0) ? ball.dx * -1 : ball.dx;
+        if(ball.x + ball.r > right_pedal.x && ball.dx > 0
+            && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
+            ball.x = right_pedal.x - ball.r;
+            ball.dx = -ball.dx;
         }
 
 
