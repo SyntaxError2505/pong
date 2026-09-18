@@ -16,6 +16,7 @@
 
 #define MAX_SPAWN_VERTICAL_VELOCITY 500.0
 #define PEDAL_SPEED 500.0
+#define MAX_INTERFERENCE 50.0
 
 typedef struct {
     float x, y;
@@ -53,6 +54,11 @@ SDL_Renderer* renderer;
 
 Ball ball = {0, 0, 10, 0, 0};
 
+void interfere(void){
+    ball.dx += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
+    ball.dy += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
+}
+
 SDL_FRect left_pedal = {
     .x = 0,
     .y = HEIGHT/2 - PEDAL_HEIGHT/2,
@@ -67,6 +73,16 @@ SDL_FRect right_pedal = {
     .h = PEDAL_HEIGHT,
 };
 
+void spawn_ball(void){
+    // Randomly spawn the ball inside a buffered zone
+    ball.x = randint(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
+    ball.y = randint(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
+    ball.dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
+    ball.dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? -1 : 1);
+
+    printf("Spawned Ball:\nx: %f\ny: %f\ndx: %f\ndy: %f\n", ball.x, ball.y, ball.dx, ball.dy);
+}
+
 int main(void){
     // SDL Init
     assert(SDL_Init(SDL_INIT_VIDEO));
@@ -75,13 +91,7 @@ int main(void){
     // set seed to current nanosecond count
     srand(SDL_GetTicksNS());
 
-    // Randomly spawn the ball inside a buffered zone
-    ball.x = randint(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
-    ball.y = randint(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
-    ball.dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
-    ball.dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? -1 : 1);
-
-    printf("Spawned Ball:\nx: %f\ny: %f\ndx: %f\ndy: %f\n", ball.x, ball.y, ball.dx, ball.dy);
+    spawn_ball();
 
     Uint64 old_time = SDL_GetTicksNS();
 
@@ -119,10 +129,12 @@ int main(void){
         if(ball.y < ball.r){
             ball.y = ball.r;
             ball.dy = -ball.dy;
+            interfere();
         }
         if(ball.y > HEIGHT - ball.r){
             ball.y = HEIGHT - ball.r;
             ball.dy = -ball.dy;
+            interfere();
         }
 
         // bounce of paddles
@@ -130,11 +142,18 @@ int main(void){
             && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
             ball.x = left_pedal.x + left_pedal.w + ball.r;
             ball.dx = -ball.dx;
+            interfere();
         }
         if(ball.x + ball.r > right_pedal.x && ball.dx > 0
             && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
             ball.x = right_pedal.x - ball.r;
             ball.dx = -ball.dx;
+            interfere();
+        }
+
+        // ball left the screen on either side, respawn it
+        if(ball.x < -ball.r || ball.x > WIDTH + ball.r){
+            spawn_ball();
         }
 
 
