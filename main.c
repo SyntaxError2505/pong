@@ -14,11 +14,12 @@
 
 #define SECOND 1000000000.0
 
-#define MAX_SPAWN_VERTICAL_VELOCITY (100.0 / SECOND)
-#define PEDAL_SPEED (500.0 / SECOND)
+#define MAX_SPAWN_VERTICAL_VELOCITY 1000.0
+#define PEDAL_SPEED 500.0
 
 typedef struct {
-    int x, y, r;
+    float x, y;
+    int r;
     float dx, dy;
 } Ball;
 
@@ -41,6 +42,10 @@ void draw_ball(SDL_Renderer *renderer, Ball ball)
 
 int randint(int min, int max){
     return min + (rand() % (max - min + 1));
+}
+
+double randdouble(double min, double max){
+    return min + (max - min) * ((double)rand() / RAND_MAX);
 }
 
 SDL_Window* window;
@@ -73,11 +78,10 @@ int main(void){
     // Randomly spawn the ball inside a buffered zone
     ball.x = randint(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
     ball.y = randint(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
-    ball.dy = randint(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
-    ball.dx = randint(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? 1 : -1);
+    ball.dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
+    ball.dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? -1 : 1);
 
-    printf("Spawned Ball:\nx: %i\ny: %i\ndx: %f\ndy: %f\n", ball.x, ball.y, ball.dx, ball.dy);
-    exit(0);
+    printf("Spawned Ball:\nx: %f\ny: %f\ndx: %f\ndy: %f\n", ball.x, ball.y, ball.dx, ball.dy);
 
     Uint64 old_time = SDL_GetTicksNS();
 
@@ -88,7 +92,7 @@ int main(void){
         old_time = new_time;
 
         // print debug info
-        printf("Delta Time: %li\nFramerate: %f\nBall x: %i\nBall y: %i\nBall dx: %f\nBall dy: %f\n", delta_time, 1000/((double)delta_time / 1000000.0), ball.x, ball.y, ball.dx, ball.dy);
+        printf("Delta Time: %lu\nFramerate: %f\nBall x: %f\nBall y: %f\nBall dx: %f\nBall dy: %f\n", delta_time, 1000/((double)delta_time / 1000000.0), ball.x, ball.y, ball.dx, ball.dy);
 
         // poll events
         SDL_Event e;
@@ -99,14 +103,34 @@ int main(void){
 
         // movement
         const bool *keys = SDL_GetKeyboardState(NULL);
-        if(keys[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED * delta_time; }
-        if(keys[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED * delta_time; }
-        if(keys[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED * delta_time; }
-        if(keys[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED * delta_time; }
+        if(keys[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
+        if(keys[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
+        if(keys[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
+        if(keys[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
 
         // ball movement
-        ball.x += ball.dx * delta_time;
-        ball.y += ball.dy * delta_time;
+        ball.x += ball.dx / SECOND * delta_time;
+        ball.y += ball.dy / SECOND * delta_time;
+
+        // bounce off the top and bottom screen edges
+        if(ball.y < ball.r){
+            ball.y = ball.r;
+            ball.dy = -ball.dy;
+        }
+        if(ball.y > HEIGHT - ball.r){
+            ball.y = HEIGHT - ball.r;
+            ball.dy = -ball.dy;
+        }
+
+        // bounce off the left and right screen edges
+        if(ball.x < ball.r){
+            ball.x = ball.r;
+            ball.dx = -ball.dx;
+        }
+        if(ball.x > WIDTH - ball.r){
+            ball.x = WIDTH - ball.r;
+            ball.dx = -ball.dx;
+        }
 
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
