@@ -37,4 +37,4 @@ We offer a nix flake that only contains a devshell:
 ```bash
 nix develop
 ```
-After that, the build process stays the same as on any other project.
+After that, the build process stays the same as on any other machine.
