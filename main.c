@@ -122,16 +122,6 @@ int main(void){
             ball.dy = -ball.dy;
         }
 
-        // bounce off the left and right screen edges
-        if(ball.x < ball.r){
-            ball.x = ball.r;
-            ball.dx = -ball.dx;
-        }
-        if(ball.x > WIDTH - ball.r){
-            ball.x = WIDTH - ball.r;
-            ball.dx = -ball.dx;
-        }
-
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
         SDL_RenderClear(renderer);
