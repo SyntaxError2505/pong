@@ -14,7 +14,7 @@
 
 #define SECOND 1000000000.0
 
-#define MAX_SPAWN_VERTICAL_VELOCITY 1000.0
+#define MAX_SPAWN_VERTICAL_VELOCITY 500.0
 #define PEDAL_SPEED 500.0
 
 typedef struct {
@@ -121,6 +121,15 @@ int main(void){
             ball.y = HEIGHT - ball.r;
             ball.dy = -ball.dy;
         }
+
+        // bounce of paddles
+        if(ball.x < ball.r && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
+            ball.dx = (ball.dx < 0) ? ball.dx * -1 : ball.dx;
+        }
+        if(ball.x > WIDTH - ball.r && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
+            ball.dx = (ball.dy > 0) ? ball.dx * -1 : ball.dx;
+        }
+
 
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
