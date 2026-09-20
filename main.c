@@ -6,6 +6,7 @@
 
 #define WIDTH 800
 #define HEIGHT 600
+#define FPS 60
 
 #define SPAWN_BUFFER 100
 
@@ -13,6 +14,7 @@
 #define PEDAL_HEIGHT 100
 
 #define SECOND 1000000000.0
+#define FRAME_TIME ((Uint64)(SECOND / FPS))
 
 #define MAX_SPAWN_VERTICAL_VELOCITY 500.0
 #define PEDAL_SPEED 500.0
@@ -59,6 +61,13 @@ void interfere(void){
     ball.dy += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
 }
 
+void cap_fps(Uint64 *next_frame){
+    *next_frame += FRAME_TIME;
+    Uint64 now = SDL_GetTicksNS();
+    if(*next_frame > now) SDL_DelayNS(*next_frame - now);
+    else *next_frame = now;
+}
+
 SDL_FRect left_pedal = {
     .x = 0,
     .y = HEIGHT/2 - PEDAL_HEIGHT/2,
@@ -94,15 +103,13 @@ int main(void){
     spawn_ball();
 
     Uint64 old_time = SDL_GetTicksNS();
+    Uint64 next_frame = old_time;
 
     for(;;){
         // meassure delta time
         Uint64 new_time = SDL_GetTicksNS();
         Uint64 delta_time = new_time - old_time;
         old_time = new_time;
-        if(delta_time > 100000000){
-            delta_time = 100000000;
-        }
 
         // print debug info
         printf("Delta Time: %lu\nFramerate: %f\nBall x: %f\nBall y: %f\nBall dx: %f\nBall dy: %f\n", delta_time, 1000/((double)delta_time / 1000000.0), ball.x, ball.y, ball.dx, ball.dy);
@@ -156,7 +163,6 @@ int main(void){
             spawn_ball();
         }
 
-
         // Background color
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
         SDL_RenderClear(renderer);
@@ -171,6 +177,9 @@ int main(void){
 
         // switch buffers
         SDL_RenderPresent(renderer);
+
+        // FPS Limit
+        cap_fps(&next_frame);
     }
 
     SDL_DestroyWindow(window);
