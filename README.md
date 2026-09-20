@@ -20,6 +20,7 @@ Dependencies are managed by your package manager, yourself or nix. Required:
 - SDL3
 - GCC
 - pkg-config
+
 SDL may require other libraries being installed.
 
 ### Build process
