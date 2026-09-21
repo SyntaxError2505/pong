@@ -170,7 +170,7 @@ int main(void){
         SDL_SetRenderDrawColor(renderer, 5, 5, 5, 255);
         SDL_RenderClear(renderer);
 
-        // Pedals
+        // Paddles
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &right_pedal);
         SDL_RenderFillRect(renderer, &left_pedal);
