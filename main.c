@@ -20,11 +20,15 @@
 #define PADDLE_SPEED 500.0
 #define MAX_INTERFERENCE 50.0
 
+// TYPES
+
 typedef struct {
     float x, y;
     int r;
     float dx, dy;
 } Ball;
+
+// FUNCTIONS
 
 void draw_ball(SDL_Renderer *renderer, Ball ball)
 {
@@ -59,6 +63,18 @@ void cap_fps(Uint64 *next_frame){
     else *next_frame = now;
 }
 
+void spawn_ball(Ball* ball){
+    // Randomly spawn the ball inside a buffered zone
+    ball->x = randdouble(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
+    ball->y = randdouble(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
+    ball->dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
+    ball->dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball->x > WIDTH/2) ? -1 : 1);
+
+    printf("Spawned Ball:\nx: %f\ny: %f\ndx: %f\ndy: %f\n", ball->x, ball->y, ball->dx, ball->dy);
+}
+
+// GLOBALS
+
 SDL_Window* window;
 SDL_Renderer* renderer;
 
@@ -78,16 +94,6 @@ SDL_FRect right_pedal = {
     .h = PADDLE_HEIGHT,
 };
 
-void spawn_ball(void){
-    // Randomly spawn the ball inside a buffered zone
-    ball.x = randdouble(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
-    ball.y = randdouble(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
-    ball.dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
-    ball.dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? -1 : 1);
-
-    printf("Spawned Ball:\nx: %f\ny: %f\ndx: %f\ndy: %f\n", ball.x, ball.y, ball.dx, ball.dy);
-}
-
 int main(void){
     // SDL Init
     assert(SDL_Init(SDL_INIT_VIDEO));
@@ -96,7 +102,7 @@ int main(void){
     // set seed to current nanosecond count
     srand(SDL_GetTicksNS());
 
-    spawn_ball();
+    spawn_ball(&ball);
 
     Uint64 old_time = SDL_GetTicksNS();
     Uint64 next_frame = old_time;
@@ -156,7 +162,7 @@ int main(void){
 
         // ball left the screen on either side, respawn it
         if(ball.x < -ball.r || ball.x > WIDTH + ball.r){
-            spawn_ball();
+            spawn_ball(&ball);
         }
 
         // Background color
