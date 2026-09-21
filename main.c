@@ -43,10 +43,6 @@ void draw_ball(SDL_Renderer *renderer, Ball ball)
     }
 }
 
-int randint(int min, int max){
-    return min + (rand() % (max - min + 1));
-}
-
 double randdouble(double min, double max){
     return min + (max - min) * ((double)rand() / RAND_MAX);
 }
@@ -84,8 +80,8 @@ SDL_FRect right_pedal = {
 
 void spawn_ball(void){
     // Randomly spawn the ball inside a buffered zone
-    ball.x = randint(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
-    ball.y = randint(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
+    ball.x = randdouble(SPAWN_BUFFER, WIDTH - SPAWN_BUFFER);
+    ball.y = randdouble(SPAWN_BUFFER, HEIGHT - SPAWN_BUFFER);
     ball.dy = randdouble(-MAX_SPAWN_VERTICAL_VELOCITY, MAX_SPAWN_VERTICAL_VELOCITY);
     ball.dx = randdouble(MAX_SPAWN_VERTICAL_VELOCITY / 2, MAX_SPAWN_VERTICAL_VELOCITY) * ((ball.x > WIDTH/2) ? -1 : 1);
 
