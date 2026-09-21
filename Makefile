@@ -12,4 +12,7 @@ clean:
 $(TARGET): $(SOURCE)
 	$(CC) -o $(TARGET) $(CFLAGS) $(LDFLAGS) $(SOURCE)
 
-.PHONY: default clean
+format: $(SOURCE)
+	clang-format -i -style=file $(SOURCE)
+
+.PHONY: default clean format
