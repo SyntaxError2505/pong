@@ -116,13 +116,13 @@ int main(void){
             // quiting the app
             if(e.type == SDL_EVENT_QUIT) break;
         }
+        const bool *keyboard_state = SDL_GetKeyboardState(NULL);
 
         // movement
-        const bool *keys = SDL_GetKeyboardState(NULL);
-        if(keys[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
-        if(keys[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
-        if(keys[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
-        if(keys[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
 
         // ball movement
         ball.x += ball.dx / SECOND * delta_time;
