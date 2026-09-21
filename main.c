@@ -47,11 +47,6 @@ double randdouble(double min, double max){
     return min + (max - min) * ((double)rand() / RAND_MAX);
 }
 
-SDL_Window* window;
-SDL_Renderer* renderer;
-
-Ball ball = {0, 0, 10, 0, 0};
-
 void interfere(Ball *ball){
     ball->dx += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
     ball->dy += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
@@ -63,6 +58,11 @@ void cap_fps(Uint64 *next_frame){
     if(*next_frame > now) SDL_DelayNS(*next_frame - now);
     else *next_frame = now;
 }
+
+SDL_Window* window;
+SDL_Renderer* renderer;
+
+Ball ball = {0, 0, 10, 0, 0};
 
 SDL_FRect left_pedal = {
     .x = 0,
