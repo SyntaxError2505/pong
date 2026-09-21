@@ -42,6 +42,7 @@
         gcc
         gnumake
         pkgconf
+        clang-tools
       ] ++ sdl3-pkg;
     };
   });
