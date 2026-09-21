@@ -52,9 +52,9 @@ SDL_Renderer* renderer;
 
 Ball ball = {0, 0, 10, 0, 0};
 
-void interfere(void){
-    ball.dx += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
-    ball.dy += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
+void interfere(Ball *ball){
+    ball->dx += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
+    ball->dy += randdouble(-MAX_INTERFERENCE, MAX_INTERFERENCE);
 }
 
 void cap_fps(Uint64 *next_frame){
@@ -132,12 +132,12 @@ int main(void){
         if(ball.y < ball.r){
             ball.y = ball.r;
             ball.dy = -ball.dy;
-            interfere();
+            interfere(&ball);
         }
         if(ball.y > HEIGHT - ball.r){
             ball.y = HEIGHT - ball.r;
             ball.dy = -ball.dy;
-            interfere();
+            interfere(&ball);
         }
 
         // bounce of paddles
@@ -145,13 +145,13 @@ int main(void){
             && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
             ball.x = left_pedal.x + left_pedal.w + ball.r;
             ball.dx = -ball.dx;
-            interfere();
+            interfere(&ball);
         }
         if(ball.x + ball.r > right_pedal.x && ball.dx > 0
             && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
             ball.x = right_pedal.x - ball.r;
             ball.dx = -ball.dx;
-            interfere();
+            interfere(&ball);
         }
 
         // ball left the screen on either side, respawn it
