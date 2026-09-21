@@ -10,14 +10,14 @@
 
 #define SPAWN_BUFFER 100
 
-#define PEDAL_WIDTH 10
-#define PEDAL_HEIGHT 100
+#define PADDLE_WIDTH 10
+#define PADDLE_HEIGHT 100
 
 #define SECOND 1000000000.0
 #define FRAME_TIME ((Uint64)(SECOND / FPS))
 
 #define MAX_SPAWN_VERTICAL_VELOCITY 500.0
-#define PEDAL_SPEED 500.0
+#define PADDLE_SPEED 500.0
 #define MAX_INTERFERENCE 50.0
 
 typedef struct {
@@ -66,16 +66,16 @@ void cap_fps(Uint64 *next_frame){
 
 SDL_FRect left_pedal = {
     .x = 0,
-    .y = HEIGHT/2 - PEDAL_HEIGHT/2,
-    .w = PEDAL_WIDTH,
-    .h = PEDAL_HEIGHT,
+    .y = HEIGHT/2 - PADDLE_HEIGHT/2,
+    .w = PADDLE_WIDTH,
+    .h = PADDLE_HEIGHT,
 };
 
 SDL_FRect right_pedal = {
-    .x = WIDTH - PEDAL_WIDTH,
-    .y = HEIGHT/2 - PEDAL_HEIGHT/2,
-    .w = PEDAL_WIDTH,
-    .h = PEDAL_HEIGHT,
+    .x = WIDTH - PADDLE_WIDTH,
+    .y = HEIGHT/2 - PADDLE_HEIGHT/2,
+    .w = PADDLE_WIDTH,
+    .h = PADDLE_HEIGHT,
 };
 
 void spawn_ball(void){
@@ -119,10 +119,10 @@ int main(void){
         const bool *keyboard_state = SDL_GetKeyboardState(NULL);
 
         // movement
-        if(keyboard_state[SDL_SCANCODE_UP])   { right_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
-        if(keyboard_state[SDL_SCANCODE_DOWN]) { right_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
-        if(keyboard_state[SDL_SCANCODE_W])    { left_pedal.y -= PEDAL_SPEED / SECOND * delta_time; }
-        if(keyboard_state[SDL_SCANCODE_S])    { left_pedal.y += PEDAL_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_UP])   { right_pedal.y -= PADDLE_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_DOWN]) { right_pedal.y += PADDLE_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_W])    { left_pedal.y -= PADDLE_SPEED / SECOND * delta_time; }
+        if(keyboard_state[SDL_SCANCODE_S])    { left_pedal.y += PADDLE_SPEED / SECOND * delta_time; }
 
         // ball movement
         ball.x += ball.dx / SECOND * delta_time;
@@ -142,13 +142,13 @@ int main(void){
 
         // bounce of paddles
         if(ball.x - ball.r < left_pedal.x + left_pedal.w && ball.dx < 0
-            && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PEDAL_HEIGHT){
+            && ball.y >= left_pedal.y && ball.y <= left_pedal.y + PADDLE_HEIGHT){
             ball.x = left_pedal.x + left_pedal.w + ball.r;
             ball.dx = -ball.dx;
             interfere(&ball);
         }
         if(ball.x + ball.r > right_pedal.x && ball.dx > 0
-            && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PEDAL_HEIGHT){
+            && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PADDLE_HEIGHT){
             ball.x = right_pedal.x - ball.r;
             ball.dx = -ball.dx;
             interfere(&ball);
