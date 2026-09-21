@@ -153,6 +153,7 @@ int main(void){
             ball.dx = -ball.dx;
             interfere(&ball);
         }
+
         if(ball.x + ball.r > right_pedal.x && ball.dx > 0
             && ball.y >= right_pedal.y && ball.y <= right_pedal.y + PADDLE_HEIGHT){
             ball.x = right_pedal.x - ball.r;
